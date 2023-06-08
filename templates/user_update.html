@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户信息修改界面</title>
+    <script src="/static/js/axios-0.18.0.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <script>
+        window.onload = () => {
+            function getQueryString(name) {
+                let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                let r = window.location.search.substr(1).match(reg);
+                if (r != null) {
+                    return decodeURIComponent(r[2]);
+                }
+                ;
+                return null;
+            }
+            //路径参数获取
+            let name = getQueryString("name")
+            let identity = getQueryString("identity")
+            let phone = getQueryString("phone")
+            let gender = getQueryString("gender")
+            let address = getQueryString('address')
+            let userId = getQueryString('userId')
+
+            //回显数据
+            let uName = document.getElementById('uName')
+            let uIdentity = document.getElementById('uIdentity')
+            let uPhone = document.getElementById('uPhone')
+            let uAddress = document.getElementById('uAddress')
+            let uGender1 = document.getElementById('uGender1')
+            let uGender2 = document.getElementById('uGender2')
+            uName.value = name
+            uIdentity.value = identity
+            uPhone.value = phone
+            uAddress.value = address
+            if (gender == "男") {
+                uGender1.checked = true
+            } else {
+                uGender2.checked = true
+            }
+            document.getElementById('userId').value = userId
+
+        }
+    </script>
+</head>
+<body>
+<h1 style="width: 300px;margin: 20px auto">用户信息修改界面</h1>
+<form action="/user/UpInfo" method="post" style="width: 620px;margin: 50px auto">
+    <br><br>
+    <p class="lead" style="display: inline-block">姓名</p><input required id="uName" type="text" name="uName"
+                                                                 style="width: 500px;height: 35px;margin-left: 60px"><br><br><br>
+    <p class="lead" style="display: inline-block">身份证号</p><input required id="uIdentity" type="text"
+                                                                     name="uIdentity"
+                                                                     style="width: 500px;height: 35px;margin-left: 20px"><br><br><br>
+    <p class="lead" style="display: inline-block">手机号码</p><input required id="uPhone" type="text" name="uPhone"
+                                                                     style="width: 500px;height: 35px;margin-left: 20px"><br><br><br>
+    <p class="lead" style="display: inline-block">医院地址</p><input required id="uAddress" type="text" name="uAddress"
+                                                                     style="width: 500px;height: 35px;margin-left: 20px"><br><br><br>
+    <p>
+    <p class="lead" style="display: inline-block">用户性别</p>
+        <input id="uGender1" name="uGender" value="男" style="margin-left: 20px;width: 20px;height: 20px"
+           type="radio">男
+        <input id="uGender2" name="uGender" value="女" style="width: 20px;height: 20px;margin-left: 10px"
+            type="radio">女
+    </p>
+    <input type="text" id="userId" name="uId" style="display: none">
+    <input type="submit" style="width: 260px;height: 50px;" value="提交">
+    <input type="reset" style="width: 260px;height: 50px;margin-left: 80px" value="重置">
+</form>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册页面</title>
+    <script src="/static/js/axios-0.18.0.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            background: url('https://cdn.pixabay.com/photo/2018/08/14/13/23/ocean-3605547_1280.jpg') no-repeat 0px 0px;
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            -moz-background-size: 100% 100%;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        #loginDiv {
+            width: 37%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 650px;
+            background-color: rgba(75, 81, 95, 0.3);
+            box-shadow: 7px 7px 17px rgba(52, 56, 66, 0.5);
+            border-radius: 5px;
+        }
+
+        #name_trip {
+            margin-left: 50px;
+            color: red;
+        }
+
+        p,
+        .sexDiv {
+            margin-top: 10px;
+            margin-left: 20px;
+            color: azure;
+        }
+
+        .sexDiv > input,
+        .hobby > input {
+            width: 30px;
+            height: 17px;
+        }
+
+        input,
+        select {
+            margin-left: 15px;
+            border-radius: 5px;
+            border-style: hidden;
+            height: 30px;
+            width: 140px;
+            background-color: rgba(216, 191, 216, 0.5);
+            outline: none;
+            color: #f0edf3;
+            padding-left: 10px;
+        }
+
+
+
+        .introduce > textarea {
+            background-color: rgba(216, 191, 216, 0.5);
+            border-style: hidden;
+            outline: none;
+            border-radius: 5px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f0edf3;
+        }
+
+        b {
+            margin-left: 50px;
+            color: #FFEB3B;
+            font-size: 10px;
+            font-weight: initial;
+        }
+    </style>
+</head>
+
+<body>
+<div id="loginDiv">
+    <form action="/user/register" method="post" enctype="multipart/form-data">
+        <h1>注册页面</h1>
+        <br>
+        <p>用户姓名:<input name="username" type="text" autofocus required><label id="name_trip"></label></p>
+
+        <p>用户密码:<input name="password" type="password" required><label id="password_trip"></label></p>
+        <p>手机号码:<input name="phone" type="password" required><label id="password_tri"></label></p>
+        <p>医院地址:<input name="address" type="text" required><label id="address_trip"></label></p>
+        <p>头像:<input type="file" name="headImg" required style="margin-left: 50px" id="file_"></p>
+        <p>
+            用户类型:
+            <select name="typeN" id="userType">
+                <option value="1" style="color: #333">用户</option>
+                <option value="2" style="color: #333">管理员</option>
+            </select>
+        </p>
+        <div class="sexDiv">
+            用户性别:
+            <input id="userSex1" name="sex" value="boy" type="radio">男
+            <input id="userSex2" name="sex" value="girl" type="radio">女
+        </div>
+        <p>
+            身份证号:
+            <input name="identity" id="identity" type="text" required>
+        </p><br>
+        <input type="submit" id="sub" value="提交" style="padding-left: 0px">
+        <input type="reset" value="重置" style="padding-left: 0px">
+    <!--<button id="test" style="width: 50px;height: 50px">ceshi</button>-->
+        &nbsp;<a href="http://localhost:8080/login" style="color: #30cfd0">返回登录界面</a>
+    </form>
+    <br>
+</div>
+<script>
+    window.onload = () => {
+        let file = document.getElementById('file')
+        let file_ = document.getElementById('file_')
+        file.value = file_.value
+    }
+</script>
+
+</body>
+
+</html>
+

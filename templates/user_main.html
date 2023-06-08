@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户主界面</title>
+    <script src="/static/js/axios-0.18.0.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+
+    <style>
+        li {
+            list-style: none;
+        }
+
+        .top {
+            width: 1920px;
+            height: 80px;
+            border: 1px solid red;
+            margin: 0 auto;
+            background-color: aliceblue;
+            position: relative;
+        }
+
+        .top_left {
+            padding-top: 20px;
+            padding-left: 20px;
+            position: relative;
+            float: left;
+            margin-left: 60px;
+            margin-top: -8px;
+        }
+
+        .top_right {
+            padding-top: 20px;
+            padding-right: 20px;
+            position: relative;
+            float: right;
+        }
+
+        .main {
+            width: 1920px;
+            margin: 0 auto;
+        }
+
+        .main_left {
+            width: 410px;
+            height: 800px;
+            border: 1px solid red;
+            float: left;
+        }
+
+        .main_right {
+            width: 1500px;
+            height: 800px;
+            border: 1px solid red;
+            float: right;
+        }
+
+        .ul_left {
+            margin-left: -20px;
+            width: 100%;
+            height: 100%;
+
+        }
+
+        .ul_left li {
+            width: 100%;
+            height: 50px;
+            text-align: center;
+            line-height: 50px;
+            margin-top: 30px;
+            background-color: aliceblue;
+        }
+
+        .ul_right {
+            width: 1500px;
+            height: 800px;
+        }
+
+        .ul_right li {
+            width: 1500px;
+            height: 800px;
+        }
+
+        .ul_right li {
+            margin-left: -40px;
+        }
+
+        .info_top {
+            width: 1500px;
+            height: 100px;
+        }
+
+        .info_main {
+            width: 1500px;
+            height: 690px;
+        }
+
+        .recover_info {
+            width: 1500px;
+            height: 615px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        #recover_info tr td {
+            line-height: 45px;
+            background-color: #EDEDEE;
+
+        }
+        #recover_info tr td:hover {
+            background-color: #d9edf7;
+        }
+        #recover_info .info td {
+            background-color: #d9edf7;
+        }
+
+        #patient_info tr td {
+            line-height: 45px;
+            background-color: #EDEDEE;
+        }
+        #patient_info tr td:hover {
+            background-color: #d9edf7;
+        }
+        #patient_info .info td {
+            background-color: #d9edf7;
+        }
+
+        #page_main {
+            width: 100%;
+            height: 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        #size_sel {
+            width: 50px;
+            height: 25px;
+            position: absolute;
+            right: 450px;
+            top: 0px;
+        }
+
+
+    </style>
+    <script>
+        window.onload = () => {
+
+            let ul_left = document.querySelector('.ul_left')
+            let ri_le = document.querySelectorAll('.ul_left li')
+
+            let ul_right = document.querySelector('.ul_right')
+            let ri_li = document.querySelectorAll('.ul_right li')
+            for (let i = 0; i < ri_li.length; i++) {
+                if (ri_li[i].className == this.className) {
+                }
+                ri_li[i].style.display = 'none'
+            }
+            ri_li[0].style.display = ''
+            ri_le[0].style.backgroundColor = 'skyblue'
+            for (let j = 0; j < ri_le.length; j++) {
+                ri_le[j].onclick = function () {
+                    let t
+                    for (let i = 0; i < ri_li.length; i++) {
+                        if (ri_li[i].className == this.className) {
+                            t = i
+                        }
+                        ri_li[i].style.display = 'none'
+                    }
+                    ri_li[t].style.display = ''
+                    for (let i = 0; i < ri_le.length; i++) {
+                        ri_le[i].style.backgroundColor = ''
+                    }
+                    this.style.backgroundColor = 'skyblue'
+                }
+            }
+
+            //查询所有病情类型
+            axios({
+                method: "get",
+                url: "http://localhost:8080/patient/typeAll"
+            }).then(function (resp) {
+                let types = resp.data.r
+                let td = document.getElementById('tD')
+                let pType2 = document.querySelector('.pType2')
+                td.innerHTML = ``
+                for (let i = 0; i < types.length; i++) {
+                    td.innerHTML += `<option>` + types[i].TypeName + `</option>`
+                }
+                for (let i = 0; i < types.length; i++) {
+                    pType2.innerHTML += `<option value="` + types[i].TypeName + `">` + types[i].TypeName + `</option>`
+                }
+            })
+
+
+            let sel_btn = document.getElementById('sel_btn')
+            let con_sel = document.getElementById('con_sel')
+            let patientInfo = document.getElementById('patient_info')
+            //查询所有病人信息
+            selAll()
+            //通过输入框模糊查询
+            sel_btn.onclick = function () {
+                let conValue = con_sel.value
+                axios({
+                    method: 'POST',
+                    url: "http://localhost:8080/patient/SelByCon",
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: {
+                        'con': conValue
+                    }
+                }).then(function (resp) {
+                    let r = resp.data.data
+                    patInfo(r)
+                })
+            }
+            let beginDate,endDate
+            //通过是否恢复筛选查询
+            let pType1 = document.querySelector('.pType1')
+            pType1.onchange = function () {
+                axios({
+                    method: 'post',
+                    url: 'http://localhost:8080/patient/SelByRe',
+                    data: {
+                        'isRe': this.value == "未恢复" ? 0 : 1,
+                        'beginDate': (beginDate.value != "" && endDate.value != "") ? beginDate.value : '1',
+                        'endDate': (beginDate.value != "" && endDate.value != "") ? endDate.value : '1',
+                    }
+                }).then(function (resp) {
+                    let r = resp.data.data
+                    patInfo(r)
+                })
+            }
+            //通过病情类型筛选查询
+            let pType2 = document.querySelector('.pType2')
+            pType2.onchange = function () {
+                axios({
+                    method: 'post',
+                    url: 'http://localhost:8080/patient/SelByTy',
+                    data: {
+                        'typeInfo': this.value,
+                        'beginDate': (beginDate.value != "" && endDate.value != "") ? beginDate.value : '1',
+                        'endDate': (beginDate.value != "" && endDate.value != "") ? endDate.value : '1',
+                    }
+                }).then(function (resp) {
+                    let r = resp.data.data
+                    patInfo(r)
+                })
+            }
+            //通过时间筛选进行查询
+            beginDate = document.getElementById('begin_date')
+            endDate = document.getElementById('end_date')
+            beginDate.onchange = function () {
+                timeSel()
+            }
+            endDate.onchange = function () {
+                timeSel()
+            }
+
+            //时间查询模板
+            function timeSel() {
+                if (beginDate.value != "" && endDate.value != "") {
+                    axios({
+                        method: 'post',
+                        url: 'http://localhost:8080/patient/SelByDate',
+                        data: {
+                            'beginDate': beginDate.value,
+                            'endDate': endDate.value,
+                            'isRe': pType1.value,
+                            'isTy': pType2.value
+                        }
+                    }).then(function (resp) {
+                        let r = resp.data.data
+                        if (r == "查询条件不合理") {
+                            alert(r)
+                            return
+                        }
+                        patInfo(r)
+                    })
+                }
+            }
+
+
+            //病人信息查看模板
+            function patInfo(r) {
+                patientInfo.innerHTML = `
+                        <tr class="info text-center">
+                            <td>姓名</td>
+                            <td>性别</td>
+                            <td>手机号码</td>
+                            <td>身份证号</td>
+                            <td>病情类型</td>
+                            <td>入诊时间</td>
+                            <td>痊愈时间</td>
+                            <td>是否康复</td>
+                            <td>修改患者信息</td>
+                            <td>删除患者信息</td>
+                        </tr>`
+                for (let i = 0; i < r.length; i++) {
+                    patientInfo.innerHTML += `
+                        <tr class="success text-center">
+                            <td>` + r[i].Name + `</td>
+                            <td>` + r[i].Gender + `</td>
+                            <td>` + r[i].Phone + `</td>
+                            <td>` + r[i].Identity + `</td>
+                            <td>` + r[i].TypeDisease + `</td>
+                            <td>` + r[i].BeginDate + `</td>
+                            <td>` + (r[i].EndDate == "0000-00-00 00:00:00" ? "还未痊愈" : r[i].EndDate) + `</td>
+                            <td>` + (r[i].IsRecover == 0 ? "未恢复" : "已痊愈") + `</td>
+                            <td><a href="http://localhost:8080/patient/updatePage?Name=` + r[i].Name + `&Identity=`+ r[i].Identity +`&Phone=`+ r[i].Phone +`&Gender=`+ r[i].Gender +`&TypeDisease=` + r[i].TypeDisease + `&isRe=`+r[i].IsRecover+`&id=`+r[i].Id+`"><button class="btn">修改信息</button></a></td>
+                            <td><button class="btn d_btn" id="`+r[i].Id+`">删除信息</button></td>
+                        </tr>`
+                }
+                let d_btns = document.querySelectorAll('.d_btn')
+                for (let i=0;i<d_btns.length;i++) {
+                    d_btns[i].onclick = function () {
+                        axios({
+                            method: 'get',
+                            url: 'http://localhost:8080/patient/De?pId='+this.id
+                        }).then(function (resp) {
+                            alert("删除成功")
+                            selAll()
+                        })
+                    }
+                }
+            }
+
+
+            //查询所有病人信息模板
+            function selAll() {
+                axios({
+                    method: 'get',
+                    url: 'http://localhost:8080/patient/SelAll'
+                }).then(function (resp) {
+                    let r = resp.data.data
+                    patInfo(r)
+                })
+            }
+
+
+            //分页功能
+            let page_main = document.getElementById('page_main_le')
+            pageGetBtns(5)
+            axios({
+                method: 'get',
+                url: 'http://localhost:8080/patient/SelPage?page=1&pageSize=5',
+            }).then(function (resp) {
+                let r = resp.data.data
+                patInfo(r)
+            })
+            //根据选框值动态获取页数
+            let size_sel = document.getElementById('size_sel')
+            size_sel.onchange = function () {
+                pageGetBtns(this.value)
+                axios({
+                    method: 'get',
+                    url: 'http://localhost:8080/patient/SelPage?page=1&pageSize=' + this.value
+                }).then(function (resp) {
+                    let r = resp.data.data
+                    patInfo(r)
+                })
+            }
+
+            function pageGetBtns(s) {
+                axios({
+                    method: 'get',
+                    url: 'http://localhost:8080/patient/SelAll'
+                }).then(function (resp) {
+                    let r = resp.data.data
+                    let nums
+                    let size = s
+                    if (r.length != 0) {
+                        if (r.length < size) {
+                            nums = 1
+                        } else {
+                            nums = r.length / size
+                        }
+                        page_main.innerHTML = ``
+                        for (let i = 0; i < nums; i++) {
+                            page_main.innerHTML += `<button>` + (i + 1) + `</button>`
+                        }
+                    }
+                    let btns = document.querySelectorAll('#page_main_le button')
+                    for (let j = 0; j < btns.length; j++) {
+                        btns[j].onclick = function () {
+                            axios({
+                                method: 'get',
+                                url: 'http://localhost:8080/patient/SelPage?page=' + this.innerHTML + '&pageSize=' + size_sel.value,
+                            }).then(function (resp) {
+                                let r = resp.data.data
+                                patInfo(r)
+                            })
+                        }
+                    }
+                })
+            }
+
+
+            let recoverInfo = document.getElementById('recover_info')
+
+            axios({
+                url: 'http://localhost:8080/patient/SelReAll',
+                method: 'get'
+            }).then(function (resp) {
+                let r = resp.data.data
+                patReInfo(r)
+            })
+
+            //近期康复病人信息查看模板
+            function patReInfo(r) {
+                recoverInfo.innerHTML = `
+                        <tr class="info text-center">
+                            <td>姓名</td>
+                            <td>性别</td>
+                            <td>手机号码</td>
+                            <td>病情类型</td>
+                            <td>入诊时间</td>
+                            <td>痊愈时间</td>
+                        </tr>`
+                for (let i = 0; i < r.length; i++) {
+                    recoverInfo.innerHTML += `
+                        <tr class="success text-center">
+                            <td>` + r[i].Name + `</td>
+                            <td>` + r[i].Gender + `</td>
+                            <td>` + r[i].Phone + `</td>
+                            <td>` + r[i].TypeDisease + `</td>
+                            <td>` + r[i].BeginDate + `</td>
+                            <td>` + (r[i].EndDate == "0000-00-00 00:00:00" ? "还未痊愈" : r[i].EndDate) + `</td>
+                        </tr>`
+                }
+            }
+
+            //模糊查询
+            let re_input = document.getElementById('re_input')
+            let re_btn = document.getElementById('re_btn')
+            re_btn.onclick = function () {
+                axios({
+                    method: 'get',
+                    url: 'http://localhost:8080/patient/SelReCon?v=' + re_input.value,
+                }).then(function (resp) {
+                    let r = resp.data.data
+                    patReInfo(r)
+                })
+            }
+
+            let re_type = document.getElementById('re_type')
+            axios({
+                method: "get",
+                url: 'http://localhost:8080/patient/typeAll'
+            }).then(function (resp) {
+                let t = resp.data.r
+                re_type.innerHTML = ``
+                for (let i = 0; i < t.length; i++) {
+                    re_type.innerHTML += `<option value="` + t[i].TypeName + `">` + t[i].TypeName + `</option>`
+                }
+            })
+            re_type.onchange = function () {
+                axios({
+                    method: 'post',
+                    url: 'http://localhost:8080/patient/SelReTy',
+                    data: {
+                        't': this.value
+                    }
+                }).then(function (resp) {
+                    let r = resp.data.data
+                    patReInfo(r)
+                })
+            }
+
+            //分页查询(痊愈)
+            let re_page = document.getElementById('re_page')
+            axios({
+                method: 'get',
+                url: 'http://localhost:8080/patient/SelReAll'
+            }).then(function (resp) {
+                let r = resp.data.data
+                let nums
+                let size = 5
+                if (r.length != 0) {
+                    if (r.length < size) {
+                        nums = 1
+                    } else {
+                        nums = r.length / size
+                    }
+                    re_page.innerHTML = ``
+                    for (let i = 0; i < nums; i++) {
+                        re_page.innerHTML += `<button>` + (i + 1) + `</button>`
+                    }
+                }
+                let btns = document.querySelectorAll('#re_page button')
+                for (let j = 0; j < btns.length; j++) {
+                    btns[j].onclick = function () {
+                        axios({
+                            method: 'get',
+                            url: 'http://localhost:8080/patient/SelPageCon?page=' + this.innerHTML + '&pageSize=5',
+                        }).then(function (resp) {
+                            let r = resp.data.data
+                            patReInfo(r)
+                        })
+                    }
+                }
+            })
+            let d_name = document.getElementById('d_name')
+            let d_id = document.getElementById('d_id')
+            let d_add = document.getElementById('d_add')
+            axios({
+                method: 'get',
+                url: 'http://localhost:8080/user/NowUser'
+            }).then(function (resp) {
+                d_name.value = resp.data.name
+                d_id.value = resp.data.phone
+                d_add.value = resp.data.address
+            })
+
+            //修改密码功能
+            let e_old = document.getElementById('e_old')
+            let e_new1 = document.getElementById('e_new1')
+            let e_new2 = document.getElementById('e_new2')
+            let up = document.getElementById('up')
+            up.onclick = function () {
+                if(e_new1.value == "" || e_new2.value == "" || e_old.value == "") {
+                    alert("输入不能为空")
+                }
+                axios({
+                    method: 'get',
+                    url: 'http://localhost:8080/user/NowUser'
+                }).then(function (resp) {
+                    let p = resp.data.password
+                    if (e_old.value == p) {
+                        if (e_new1.value != "" && e_new2.value != "") {
+                            if (e_new1.value == e_new2.value) {
+                                axios({
+                                    method: 'post',
+                                    url: 'http://localhost:8080/user/UpPa',
+                                    data: {
+                                        "newP": e_new1.value
+                                    }
+                                }).then(function (resp) {
+                                    alert(resp.data.data)
+                                    window.location.href = 'http://localhost:8080/login'
+                                })
+                            } else {
+                                alert("新密码两次输入不一致")
+                            }
+                        } else {
+                            alert("输入不能为空")
+                        }
+                    } else {
+                        alert("原密码输入有误")
+                    }
+                })
+            }
+
+            //注销功能（删除session中存储信息）
+            let out = document.getElementById('out')
+            out.onclick = function () {
+                axios({
+                    method: 'get',
+                    url: 'http://localhost:8080/user/Logout'
+                }).then(function (resp) {
+                    alert(resp.data.data)
+                    window.location.href = 'http://localhost:8080/login'
+                })
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="top">
+    <div class="top_left">
+        <img src="/static/images/hospital.jpg" id="headImg" width="50px" height="50px">
+    </div>
+    <h1 style="position: absolute;top: 0px;left: 830px">欢迎使用博爱管理系统</h1>
+    <div class="top_right">
+        <img src="/static/upload/{{.user.Img}}" style="cursor:pointer;" width="60px" height="40px" id="i_btn">
+        <p class="lead" id="uN" style="position: absolute;top: 25px;right: 100px;width: 110px;cursor:pointer;font-weight: bold;color: skyblue">{{.user.Username}}，你好</p>
+        <p class="lead" id="out" style="position: absolute;top: 25px;right: 220px;width: 110px;cursor:pointer;font-weight: bold">安全退出</p>
+    </div>
+</div>
+<div class="main">
+    <div class="main_left">
+        <ul class="ul_left">
+            <li class="a">系统首页</li>
+            <li class="b">病人信息查看</li>
+            <li class="c">病人登记</li>
+            <li class="d">医院信息上传</li>
+            <li class="e">修改账户密码</li>
+            <li class="f">增加病情类型</li>
+        </ul>
+    </div>
+    <div class="main_right">
+        <ul class="ul_right">
+            <li class="a">
+                <div class="main_index" style="width: 100%;padding-top: 70px;background: url('/static/images/co.jpg');">
+                    <h1 style="color: red;margin: 0px auto;text-align: center">近期康复病人信息</h1>
+                    <form action="javascript:void(0)" style="margin-top: 20px;text-align: center">
+                        搜索：<input type="text" id="re_input" style="margin-right: 40px">
+                        病情类型：
+                        <select name="pType1" id="re_type"
+                                style="width: 100px;height: 35px;margin-left: 15px;text-align: center;line-height: 35px">
+
+                        </select>
+                        <input type="submit" value="查询" id="re_btn" style="margin-left: 20px">
+                    </form>
+                    <div class="recover_info">
+                        <table id="recover_info" class="table table-bordered table-hover table-striped table-condensed">
+
+                        </table>
+                        <div id="re_page" style="text-align: center">
+
+                        </div>
+                        <i style="position:absolute;right: 20px; bottom: 20px">（一页五条信息）</i>
+                    </div>
+
+                </div>
+            </li>
+            <li class="b" style="padding-top: 10px;background: url('/static/images/co.jpg');">
+                <div class="info_top" style="padding-top: 40px">
+                    <form action="javascript:void(0)" method="post">
+                        <p style="display: inline-block;margin-left: 150px">搜索：</p><input type="text" id="con_sel"
+                                                                                            style="">
+                        <p style="display: inline-block;margin-left: 25px">选框筛选(实时)：</p>
+                        <select name="pType1" class="pType1"
+                                style="width: 100px;height: 35px;margin-left: 15px;text-align: center;line-height: 35px">
+                            <option value="已恢复">已恢复</option>
+                            <option value="未恢复">未恢复</option>
+                        </select>
+                        <select name="pType2" class="pType2"
+                                style="width: 100px;height: 35px;margin-left: 15px;text-align: center;line-height: 35px">
+
+                        </select>
+                        <p style="display: inline-block;margin-left: 25px">日期查询：</p><input type="datetime-local"
+                                                                                               name="begin_time"
+                                                                                               id="begin_date"
+                                                                                               style="margin-left: 20px;">
+                        <p style="display:inline-block;margin-left: 15px">~</p><input type="datetime-local"
+                                                                                      name="end_time" id="end_date"
+                                                                                      style="margin-left: 20px">
+                        <input type="submit" value="查询" id="sel_btn" style="margin-left: 20px">
+                    </form>
+                </div>
+                <div class="info_main">
+                    <table id="patient_info" class="table table-bordered table-hover table-striped table-condensed">
+
+                    </table>
+                    <div id="page_main">
+                        <div id="page_main_le">
+
+                        </div>
+                        <select id="size_sel">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">40</option>
+                        </select>
+                    </div>
+                </div>
+            </li>
+            <li class="c" style="margin-left: -40px;background: url('/static/images/co.jpg');">
+                <form action="/user/regPatient" method="post" style="margin-left: 40px">
+                    <br><br>
+                    <p class="lead" style="display: inline-block">姓名</p><input required type="text" name="pName"
+                                                                                 style="width: 500px;height: 35px;margin-left: 60px"><br><br><br>
+                    <p class="lead" style="display: inline-block">身份证号</p><input required type="text"
+                                                                                     name="pIdentity"
+                                                                                     style="width: 500px;height: 35px;margin-left: 20px"><br><br><br>
+                    <p class="lead" style="display: inline-block">手机号码</p><input required type="text" name="pPhone"
+                                                                                     style="width: 500px;height: 35px;margin-left: 20px"><br><br><br>
+                    <p>
+                    <p class="lead" style="display: inline-block">用户性别</p>
+                    <input id="userSex1" name="pGender" value="男" style="margin-left: 20px;width: 20px;height: 20px"
+                           type="radio">男
+                    <input id="userSex2" name="pGender" value="女" style="width: 20px;height: 20px;margin-left: 10px"
+                           type="radio">女
+                    </p>
+                    <p class="lead" style="display: inline-block">病情叙述</p><input required type="text"
+                                                                                     name="pIntroduce"
+                                                                                     style="width: 500px;height: 35px;margin-left: 20px"><br><br><br>
+                    <p class="lead" style="display: inline-block">病情类型</p>
+                    <select name="pType" id="tD"
+                            style="width: 100px;height: 35px;margin-left: 15px;text-align: center;line-height: 35px"></select>
+                    <br><br><br>
+                    <input type="submit" style="width: 260px;height: 50px;" value="提交">
+                    <input type="reset" style="width: 260px;height: 50px;margin-left: 80px" value="重置">
+                </form>
+            </li>
+            <li class="d" style="padding-left: 65px;background: url('/static/images/co.jpg');">
+                <form action="/user/UpUser" method="post">
+                    <br><br>
+                    <p class="lead" style="display: inline-block">姓名</p><input id="d_name" required type="text" name="dName"
+                                                                                 style="width: 500px;height: 35px;margin-left: 60px"><br><br><br>
+                    <p class="lead" style="display: inline-block">手机号码</p><input id="d_id" required type="text"
+                                                                                     name="dIdentity"
+                                                                                     style="width: 500px;height: 35px;margin-left: 20px"><br><br><br>
+                    <p class="lead" style="display: inline-block">医院地址</p>
+                    <input required type="text" id="d_add" name="dAddress" style="width: 500px;height: 35px;margin-left: 18px"><br><br><br>
+                    <br><br><br>
+                    <input type="submit" style="width: 260px;height: 50px;" value="提交">
+                    <input type="reset" style="width: 260px;height: 50px;margin-left: 80px" value="重置">
+                </form>
+
+            </li>
+            <li class="e" style="padding-left: 65px;background: url('/static/images/co.jpg');">
+                <form action="javascript:void(0)">
+                    <br><br>
+                    <p class="lead" style="display: inline-block">原密码</p><input id="e_old" required type="text" name="e_old"
+                                                                                 style="width: 500px;height: 35px;margin-left: 80px"><br><br><br>
+                    <p class="lead" style="display: inline-block">新密码</p><input id="e_new1" required type="text"
+                                                                                     name="e_new1"
+                                                                                     style="width: 500px;height: 35px;margin-left: 80px"><br><br><br>
+                    <p class="lead" style="display: inline-block">再次输入</p><input id="e_new2" required type="text"
+                                                                                   name="e_new2"
+                                                                                   style="width: 500px;height: 35px;margin-left: 60px"><br><br><br>
+                    <br><br><br>
+                    <input id="up" type="submit" style="width: 260px;height: 50px;margin-left: 25px" value="提交">
+                    <input type="reset" style="width: 260px;height: 50px;margin-left: 80px" value="重置">
+                </form>
+            </li>
+            <li class="f" style="padding-left: 65px;background: url('/static/images/co.jpg');">
+                <form action="/patient/AddType" method="post">
+                    <br><br>
+                    <p class="lead" style="display: inline-block">类型名称</p><input id="f_type" required type="text" name="f_type"
+                                                                                   style="width: 500px;height: 35px;margin-left: 80px"><br><br><br>
+                    <br><br><br>
+                    <input id="f_sub" type="submit" style="width: 260px;height: 50px;margin-left: 25px" value="提交">
+                    <input type="reset" style="width: 260px;height: 50px;margin-left: 80px" value="重置">
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

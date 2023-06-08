@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>病人信息修改界面</title>
+    <script src="/static/js/axios-0.18.0.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <script>
+        window.onload = () => {
+            let uName= document.getElementById('uName')
+            let uIdentity = document.getElementById('uIdentity')
+            let uPhone = document.getElementById('uPhone')
+            let uGender1 = document.getElementById('uGender1')
+            let uGender2 = document.getElementById('uGender2')
+            let uType = document.getElementById('uType')
+            let isRe1 = document.getElementById('isRe1')
+            let isRe2 = document.getElementById('isRe2')
+
+            axios({
+                method: 'get',
+                url: 'http://localhost:8080/patient/updatePage'
+            })
+            function getQueryString(name) {
+                let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                let r = window.location.search.substr(1).match(reg);
+                if (r != null) {
+                    return decodeURIComponent(r[2]);
+                };
+                return null;
+            }
+            let name = getQueryString("Name")
+            let identity = getQueryString("Identity")
+            let phone = getQueryString("Phone")
+            let Gender = getQueryString("Gender")
+            let TypeDisease = getQueryString("TypeDisease")
+            let isRe = getQueryString("isRe")
+            let idValue = getQueryString("id")
+            uName.value = name
+            uIdentity.value = identity
+            uPhone.value = phone
+            if(Gender == "男") {
+                uGender1.checked = true
+            } else {
+                uGender2.checked = true
+            }
+            if(isRe == 1) {
+                isRe1.checked = true
+            } else {
+                isRe2.checked = true
+            }
+
+            //查询所有病情类型
+            axios({
+                method: "get",
+                url: "http://localhost:8080/patient/typeAll"
+            }).then(function (resp) {
+                let types = resp.data.r
+                let uType = document.querySelector('#uType')
+                uType.innerHTML = `<option value="` + TypeDisease + `">` + TypeDisease + `</option>`
+                for (let i = 0; i < types.length; i++) {
+                    if(types[i].TypeName != TypeDisease) {
+                        uType.innerHTML += `<option value="` + types[i].TypeName + `">` + types[i].TypeName + `</option>`
+                    }
+                }
+            })
+            let idInput = document.getElementById('isId')
+            idInput.value = idValue
+        }
+    </script>
+</head>
+<body>
+<h1 style="width: 300px;margin: 20px auto">病人信息修改界面</h1>
+<form action="/patient/UpInfo" method="post" style="width: 620px;margin: 50px auto">
+    <br><br>
+    <p class="lead" style="display: inline-block">姓名</p><input required id="uName" type="text" name="uName"
+                                                                 style="width: 500px;height: 35px;margin-left: 60px"><br><br><br>
+    <p class="lead" style="display: inline-block">身份证号</p><input required id="uIdentity" type="text"
+                                                                     name="uIdentity"
+                                                                     style="width: 500px;height: 35px;margin-left: 20px"><br><br><br>
+    <p class="lead" style="display: inline-block">手机号码</p><input required id="uPhone" type="text" name="uPhone"
+                                                                     style="width: 500px;height: 35px;margin-left: 20px"><br><br><br>
+    <p>
+    <p class="lead" style="display: inline-block">用户性别</p>
+    <input id="uGender1" name="uGender" value="男" style="margin-left: 20px;width: 20px;height: 20px"
+           type="radio">男
+    <input id="uGender2" name="uGender" value="女" style="width: 20px;height: 20px;margin-left: 10px"
+           type="radio">女
+    </p>
+    <p class="lead" style="display: inline-block">是否痊愈</p>
+    <input id="isRe1" name="isRe" value="1" style="margin-left: 20px;width: 20px;height: 20px"
+           type="radio">是
+    <input id="isRe2" name="isRe" value="0" style="width: 20px;height: 20px;margin-left: 10px"
+           type="radio">否
+    </p>
+    <p class="lead" style="display: inline-block">病情类型</p>
+    <select name="uType" id="uType"
+            style="width: 100px;height: 35px;margin-left: 15px;text-align: center;line-height: 35px"></select>
+    <br><br><br>
+    <input type="text" name="isId" id="isId" style="display: none">
+    <input type="submit" style="width: 260px;height: 50px;" value="提交">
+    <input type="reset" style="width: 260px;height: 50px;margin-left: 80px" value="重置">
+</form>
+
+</body>
+</html>
